@@ -24,8 +24,8 @@ mutable struct Agent
     use_states_info_gain::Bool # States Information Gain Boolean Flag
     action_selection::String # Action selection: can be either "deterministic" or "stochastic"
     modalities_to_learn::String # Modalities can be eithe "all" or "# modality"
-    lr_pA::Int
-    fr_pA::Int
+    lr_pA::Float64
+    fr_pA::Float64
 
 end
 
