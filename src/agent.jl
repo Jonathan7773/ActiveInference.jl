@@ -7,7 +7,7 @@ mutable struct Agent
     B::Array{Any,1}
     C::Array{Any,1}  
     D::Array{Any,1}
-    pA::Array{Any,1}
+    pA::Union{Array{Any,1}, Nothing}
     policies::Array  # Inferred from the B matrix
     num_controls::Array{Int,1}  # Number of actions per factor
     control_fac_idx::Array{Int,1}  # Indices of controllable factors
