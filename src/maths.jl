@@ -118,9 +118,9 @@ function spm_cross(x, y=nothing; remove_singleton_dims=true, args...)
     # If y is provided, perform the cross multiplication.
     if y !== nothing
 
-        if y isa AbstractVector
-            y = spm_cross(y)
-        end
+        #if y isa AbstractVector
+        #    y = spm_cross(y)
+        #end
 
         reshape_dims_x = tuple(size(x)..., ones(Int, ndims(y))...)
         A = reshape(x, reshape_dims_x)
@@ -145,6 +145,57 @@ function spm_cross(x, y=nothing; remove_singleton_dims=true, args...)
 
     return z
 end
+
+
+""" SPM_cross but for learning """
+function spm_cross_learning(x, y=nothing; remove_singleton_dims=true, args...)
+    # If only x is provided and it is a vector of arrays, recursively call spm_cross on its elements.
+    if y === nothing && isempty(args)
+        if x isa AbstractVector
+            return reduce((a, b) -> spm_cross(a, b), x)
+        elseif typeof(x) <: Number || typeof(x) <: AbstractArray
+            return x
+        else
+            throw(ArgumentError("Invalid input to spm_cross (\$x)"))
+        end
+    end
+
+    # If y is provided, perform the cross multiplication.
+    if y !== nothing
+
+        if y isa AbstractVector
+            y = spm_cross_learning(y)
+        end
+        #if y isa AbstractVector && isa(y, Number)
+        #    y = reduce((a, b) -> spm_cross(a, b; remove_singleton_dims=remove_singleton_dims), y)
+        #else
+        #    y = y
+        #end
+        
+        reshape_dims_x = tuple(size(x)..., ones(Int, ndims(y))...)
+        A = reshape(x, reshape_dims_x)
+
+        reshape_dims_y = tuple(ones(Int, ndims(x))..., size(y)...)
+        B = reshape(y, reshape_dims_y)
+
+        z = A .* B
+    else
+        z = x
+    end
+
+    # Recursively call spm_cross for additional arguments
+    for arg in args
+        z = spm_cross(z, arg; remove_singleton_dims=remove_singleton_dims)
+    end
+
+    # remove singleton dimension if true--
+    if remove_singleton_dims
+        z = dropdims(z, dims = tuple(findall(size(z) .== 1)...))
+    end
+
+    return z
+end
+
 
 """ Multi-dimensional inner product """
 #= Instead of summing over all indices, the function sums over only the last three
