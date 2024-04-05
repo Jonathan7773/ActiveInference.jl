@@ -20,12 +20,13 @@ mutable struct Agent
     E::Any # E - vector (Habits)
     gamma::Float64 # Gamma parameter
     alpha::Float64 # Alpha parameter
+    lr_pA::Float64
+    fr_pA::Float64
     use_utility::Bool # Utility Boolean Flag
     use_states_info_gain::Bool # States Information Gain Boolean Flag
     action_selection::String # Action selection: can be either "deterministic" or "stochastic"
     modalities_to_learn::String # Modalities can be eithe "all" or "# modality"
-    lr_pA::Float64
-    fr_pA::Float64
+    
 
 end
 
