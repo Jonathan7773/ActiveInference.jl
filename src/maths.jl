@@ -119,7 +119,7 @@ function spm_cross(x, y=nothing; remove_singleton_dims=true, args...)
     if y !== nothing
 
         if y isa AbstractVector
-            y = spm_cross_learning(y)
+            y = spm_cross(y)
         end
 
         reshape_dims_x = tuple(size(x)..., ones(Int, ndims(y))...)
