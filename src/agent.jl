@@ -7,6 +7,7 @@ mutable struct Agent
     B::Array{Any,1}
     C::Array{Any,1}  
     D::Array{Any,1}
+    pA::Array{Any,1}
     policies::Array  # Inferred from the B matrix
     num_controls::Array{Int,1}  # Number of actions per factor
     control_fac_idx::Array{Int,1}  # Indices of controllable factors
@@ -21,11 +22,14 @@ mutable struct Agent
     alpha::Float64 # Alpha parameter
     use_utility::Bool # Utility Boolean Flag
     use_states_info_gain::Bool # States Information Gain Boolean Flag
-    action_selection::String # Action selection: can be either "deterministic" or "stochastic"   
+    action_selection::String # Action selection: can be either "deterministic" or "stochastic"
+    modalities_to_learn::String # Modalities can be eithe "all" or "# modality"
+    lr_pA::Int
+    fr_pA::Int
 
 end
 
-function initialize_agent(A, B, C, D; num_controls=nothing, control_fac_idx=nothing, policy_len=1, E=nothing, gamma=16.0, alpha=16.0, use_utility=true, use_states_info_gain=true, action_selection="stochastic")
+function initialize_agent(A, B, C, D; pA = nothing, num_controls=nothing, control_fac_idx=nothing, policy_len=1, E=nothing, gamma=16.0, alpha=16.0, lr_pA = 1.0, fr_pA = 1.0, use_utility=true, use_states_info_gain=true, action_selection="stochastic")
     num_states = [size(B[f], 1) for f in eachindex(B)]
 
     # if num_controls are not given, they are inferred from the B matrix
@@ -44,7 +48,7 @@ function initialize_agent(A, B, C, D; num_controls=nothing, control_fac_idx=noth
     Q_pi = ones(length(policies)) / length(policies)  
     G = zeros(length(policies))
     action = Float64[]
-    return Agent(A, B, C, D, policies, num_controls, control_fac_idx, policy_len, qs_current, prior, Q_pi, G, action, E, gamma, alpha, use_utility, use_states_info_gain, action_selection)
+    return Agent(A, B, C, D, pA, policies, num_controls, control_fac_idx, policy_len, qs_current, prior, Q_pi, G, action, E, gamma, alpha, lr_pA, fr_pA, use_utility, use_states_info_gain, action_selection)
 end
 
 function infer_states!(agent::Agent, obs)
