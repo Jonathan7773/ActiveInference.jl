@@ -117,7 +117,11 @@ function spm_cross(x, y=nothing; remove_singleton_dims=true, args...)
 
     # If y is provided, perform the cross multiplication.
     if y !== nothing
-        
+
+        if y isa AbstractVector
+            y = spm_cross_learning(y)
+        end
+
         reshape_dims_x = tuple(size(x)..., ones(Int, ndims(y))...)
         A = reshape(x, reshape_dims_x)
 
@@ -162,11 +166,6 @@ function spm_cross_learning(x, y=nothing; remove_singleton_dims=true, args...)
         if y isa AbstractVector
             y = spm_cross_learning(y)
         end
-        #if y isa AbstractVector && isa(y, Number)
-        #    y = reduce((a, b) -> spm_cross(a, b; remove_singleton_dims=remove_singleton_dims), y)
-        #else
-        #    y = y
-        #end
         
         reshape_dims_x = tuple(size(x)..., ones(Int, ndims(y))...)
         A = reshape(x, reshape_dims_x)
