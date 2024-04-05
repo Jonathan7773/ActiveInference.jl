@@ -174,7 +174,7 @@ function spm_cross_learning(x, y=nothing; remove_singleton_dims=true, args...)
             A = x
         end
 
-        if !isa(y Number)
+        if !isa(y, Number)
             reshape_dims_y = tuple(ones(Int, ndims(x))..., size(y)...)
             B = reshape(y, reshape_dims_y)
         else
