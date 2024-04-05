@@ -193,7 +193,7 @@ function spm_cross_learning(x, y=nothing; remove_singleton_dims=true, args...)
 
     # remove singleton dimension if true--
     if remove_singleton_dims
-        z = dropdims(z, dims = tuple(findall(size(z) .== 1)...))
+        z = _dropdims(z, dims = tuple(findall(size(z) .== 1)...))
     end
 
     return z
