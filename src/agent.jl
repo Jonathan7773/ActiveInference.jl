@@ -29,7 +29,7 @@ mutable struct Agent
 
 end
 
-function initialize_agent(A, B, C, D; pA = nothing, num_controls=nothing, control_fac_idx=nothing, policy_len=1, E=nothing, gamma=16.0, alpha=16.0, lr_pA = 1.0, fr_pA = 1.0, use_utility=true, use_states_info_gain=true, action_selection="stochastic")
+function initialize_agent(A, B, C, D; pA = nothing, num_controls=nothing, control_fac_idx=nothing, policy_len=1, E=nothing, gamma=16.0, alpha=16.0, lr_pA = 1.0, fr_pA = 1.0, use_utility=true, use_states_info_gain=true, action_selection="stochastic", modalities_to_learn = "all")
     num_states = [size(B[f], 1) for f in eachindex(B)]
 
     # if num_controls are not given, they are inferred from the B matrix
@@ -48,7 +48,7 @@ function initialize_agent(A, B, C, D; pA = nothing, num_controls=nothing, contro
     Q_pi = ones(length(policies)) / length(policies)  
     G = zeros(length(policies))
     action = Float64[]
-    return Agent(A, B, C, D, pA, policies, num_controls, control_fac_idx, policy_len, qs_current, prior, Q_pi, G, action, E, gamma, alpha, lr_pA, fr_pA, use_utility, use_states_info_gain, action_selection)
+    return Agent(A, B, C, D, pA, policies, num_controls, control_fac_idx, policy_len, qs_current, prior, Q_pi, G, action, E, gamma, alpha, lr_pA, fr_pA, use_utility, use_states_info_gain, action_selection, modalities_to_learn)
 end
 
 function infer_states!(agent::Agent, obs)
