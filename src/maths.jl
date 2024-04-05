@@ -118,9 +118,9 @@ function spm_cross(x, y=nothing; remove_singleton_dims=true, args...)
     # If y is provided, perform the cross multiplication.
     if y !== nothing
 
-        if y isa AbstractVector
-            y = spm_cross(y)
-        end
+        #if y isa AbstractVector
+        #    y = spm_cross(y)
+        #end
 
         reshape_dims_x = tuple(size(x)..., ones(Int, ndims(y))...)
         A = reshape(x, reshape_dims_x)
@@ -152,7 +152,7 @@ function spm_cross_learning(x, y=nothing; remove_singleton_dims=true, args...)
     # If only x is provided and it is a vector of arrays, recursively call spm_cross on its elements.
     if y === nothing && isempty(args)
         if x isa AbstractVector
-            return reduce((a, b) -> spm_cross(a, b), x)
+            return reduce((a, b) -> spm_cross_learning(a, b), x)
         elseif typeof(x) <: Number || typeof(x) <: AbstractArray
             return x
         else
@@ -180,7 +180,7 @@ function spm_cross_learning(x, y=nothing; remove_singleton_dims=true, args...)
 
     # Recursively call spm_cross for additional arguments
     for arg in args
-        z = spm_cross(z, arg; remove_singleton_dims=remove_singleton_dims)
+        z = spm_cross_learning(z, arg; remove_singleton_dims=remove_singleton_dims)
     end
 
     # remove singleton dimension if true--
