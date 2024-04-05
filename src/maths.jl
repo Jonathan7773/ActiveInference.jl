@@ -152,7 +152,7 @@ function spm_cross_learning(x, y=nothing; remove_singleton_dims=true, args...)
     # If only x is provided and it is a vector of arrays, recursively call spm_cross on its elements.
     if y === nothing && isempty(args)
         if x isa AbstractVector
-            return reduce((a, b) -> spm_cross(a, b), x)
+            return reduce((a, b) -> spm_cross_learning(a, b), x)
         elseif typeof(x) <: Number || typeof(x) <: AbstractArray
             return x
         else
@@ -167,11 +167,19 @@ function spm_cross_learning(x, y=nothing; remove_singleton_dims=true, args...)
             y = spm_cross_learning(y)
         end
         
-        reshape_dims_x = tuple(size(x)..., ones(Int, ndims(y))...)
-        A = reshape(x, reshape_dims_x)
+        if !isa(x, Number)
+            reshape_dims_x = tuple(size(x)..., ones(Int, ndims(y))...)
+            A = reshape(x, reshape_dims_x)
+        else
+            A = x
+        end
 
-        reshape_dims_y = tuple(ones(Int, ndims(x))..., size(y)...)
-        B = reshape(y, reshape_dims_y)
+        if !isa(y Number)
+            reshape_dims_y = tuple(ones(Int, ndims(x))..., size(y)...)
+            B = reshape(y, reshape_dims_y)
+        else
+            B = y
+        end 
 
         z = A .* B
     else
