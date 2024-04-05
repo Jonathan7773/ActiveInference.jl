@@ -18,6 +18,7 @@ export # maths.jl
        spm_log_array_any,
        softmax_array,
        spm_cross,
+       spm_corss_learning,
        spm_dot,
        spm_MDP_G,
        norm_dist_array,
