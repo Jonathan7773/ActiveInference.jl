@@ -164,7 +164,7 @@ function spm_cross_learning(x, y=nothing; remove_singleton_dims=true, args...)
     if y !== nothing
 
         if y isa AbstractVector
-            y = spm_cross_learning(y)
+            y = spm_cross_learning(y, remove_singleton_dims = false)
         end
         
         if !isa(x, Number)
