@@ -29,7 +29,7 @@ mutable struct Agent
 
 end
 
-function initialize_agent(A, B, C, D; pA, num_controls=nothing, control_fac_idx=nothing, policy_len=1, E=nothing, gamma=16.0, alpha=16.0, lr_pA = 1.0, fr_pA = 1.0, use_utility=true, use_states_info_gain=true, action_selection="stochastic", modalities_to_learn = "all")
+function initialize_agent(A, B, C, D; pA = nothing, num_controls=nothing, control_fac_idx=nothing, policy_len=1, E=nothing, gamma=16.0, alpha=16.0, lr_pA = 1.0, fr_pA = 1.0, use_utility=true, use_states_info_gain=true, action_selection="stochastic", modalities_to_learn = "all")
     num_states = [size(B[f], 1) for f in eachindex(B)]
 
     # if num_controls are not given, they are inferred from the B matrix
