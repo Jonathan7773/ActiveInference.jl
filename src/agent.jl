@@ -20,17 +20,18 @@ mutable struct Agent
     E::Any # E - vector (Habits)
     gamma::Float64 # Gamma parameter
     alpha::Float64 # Alpha parameter
-    lr_pA::Float64
-    fr_pA::Float64
+    lr_pA::Float64 # pA learning parameter
+    fr_pA::Float64 # pA forgetting parameter, should be 1 for no forgetting
     use_utility::Bool # Utility Boolean Flag
     use_states_info_gain::Bool # States Information Gain Boolean Flag
+    use_param_info_gain::Bool
     action_selection::String # Action selection: can be either "deterministic" or "stochastic"
     modalities_to_learn::String # Modalities can be eithe "all" or "# modality"
     
 
 end
 
-function initialize_agent(A, B, C, D; pA = nothing, num_controls=nothing, control_fac_idx=nothing, policy_len=1, E=nothing, gamma=16.0, alpha=16.0, lr_pA = 1.0, fr_pA = 1.0, use_utility=true, use_states_info_gain=true, action_selection="stochastic", modalities_to_learn = "all")
+function initialize_agent(A, B, C, D; pA = nothing, num_controls=nothing, control_fac_idx=nothing, policy_len=1, E=nothing, gamma=16.0, alpha=16.0, lr_pA = 1.0, fr_pA = 1.0, use_utility=true, use_states_info_gain=true, use_param_info_gain = false, action_selection="stochastic", modalities_to_learn = "all")
     num_states = [size(B[f], 1) for f in eachindex(B)]
 
     # if num_controls are not given, they are inferred from the B matrix
@@ -49,7 +50,7 @@ function initialize_agent(A, B, C, D; pA = nothing, num_controls=nothing, contro
     Q_pi = ones(length(policies)) / length(policies)  
     G = zeros(length(policies))
     action = Float64[]
-    return Agent(A, B, C, D, pA, policies, num_controls, control_fac_idx, policy_len, qs_current, prior, Q_pi, G, action, E, gamma, alpha, lr_pA, fr_pA, use_utility, use_states_info_gain, action_selection, modalities_to_learn)
+    return Agent(A, B, C, D, pA, policies, num_controls, control_fac_idx, policy_len, qs_current, prior, Q_pi, G, action, E, gamma, alpha, lr_pA, fr_pA, use_utility, use_states_info_gain, use_param_info_gain, action_selection, modalities_to_learn)
 end
 
 function infer_states!(agent::Agent, obs)
