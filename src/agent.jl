@@ -64,13 +64,22 @@ function infer_states!(agent::Agent, obs)
 end
 
 # Update the agent's beliefs over policies
+# function infer_policies!(agent::Agent)
+#     q_pi, G = update_posterior_policies(agent.qs_current, agent.A, agent.B, agent.C, agent.policies, agent.use_utility, agent.use_states_info_gain,agent.E, agent.gamma)
+
+#     agent.Q_pi = q_pi
+#     agent.G = G  
+#     return q_pi, G
+# end
+
 function infer_policies!(agent::Agent)
-    q_pi, G = update_posterior_policies(agent.qs_current, agent.A, agent.B, agent.C, agent.policies, agent.use_utility, agent.use_states_info_gain,agent.E, agent.gamma)
+    q_pi, G = update_posterior_policies(agent.qs_current, agent.A, agent.B, agent.C, agent.policies, agent.use_utility, agent.use_states_info_gain, agent.use_param_info_gain, agent.pA, agent.E, agent.gamma)
 
     agent.Q_pi = q_pi
     agent.G = G  
     return q_pi, G
 end
+
 
 # Agent sample action
 function sample_action!(agent::Agent)

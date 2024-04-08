@@ -137,7 +137,37 @@ end
 #### Policy Inference #### 
 
 """ Update Posterior over Policies """
-function update_posterior_policies(qs, A, B, C, policies, use_utility=true, use_states_info_gain=true,E = nothing, gamma=16.0)
+# function update_posterior_policies(qs, A, B, C, policies, use_utility=true, use_states_info_gain=true,E = nothing, gamma=16.0)
+#     n_policies = length(policies)
+#     G = zeros(n_policies)
+#     q_pi = zeros(n_policies, 1)
+#     qs_pi = []
+#     qo_pi = []
+  
+#     if isnothing(E)
+#         lnE = spm_log_single(ones(n_policies) / n_policies)
+#     else
+#         lnE = spm_log_single(E)
+#     end
+
+#     for (idx, policy) in enumerate(policies)
+#         qs_pi = get_expected_states(qs, B, policy)
+#         qo_pi = get_expected_obs(qs_pi, A)
+
+#         if use_utility
+#             G[idx] += calc_expected_utility(qo_pi, C)
+#         end
+
+#         if use_states_info_gain
+#             G[idx] += calc_states_info_gain(A, qs_pi)
+#         end
+#     end
+
+#     q_pi = softmax(G * gamma + lnE)
+#     return q_pi, G
+# end
+
+function update_posterior_policies(qs, A, B, C, policies, use_utility=true, use_states_info_gain=true, use_param_info_gain = false, pA = nothing, E = nothing, gamma=16.0)
     n_policies = length(policies)
     G = zeros(n_policies)
     q_pi = zeros(n_policies, 1)
@@ -161,6 +191,13 @@ function update_posterior_policies(qs, A, B, C, policies, use_utility=true, use_
         if use_states_info_gain
             G[idx] += calc_states_info_gain(A, qs_pi)
         end
+
+        if use_param_info_gain
+            if pA !== nothing
+                G[idx] += calc_pA_info_gain(pA, qo_pi, qs_pi)
+            end
+        end
+
     end
 
     q_pi = softmax(G * gamma + lnE)
@@ -223,6 +260,30 @@ function calc_states_info_gain(A, qs_pi)
 
     return states_surprise
 end
+
+""" Calculate Parameter Information Gain """
+function calc_pA_info_gain(pA, qo_pi, qs_pi)
+
+    n_steps = length(qo_pi)
+    num_modalities = length(pA)
+
+    wA = array_of_any(num_modalities)
+    for (modality, pA_m) in enumerate(pA)
+        wA[modality] = spm_wnorm(pA[modality])
+    end
+
+    pA_info_gain = 0
+
+    for modality in 1:num_modalities
+        wA_modality = wA[modality] .* pA[modality]
+
+        for t in 1:n_steps
+            pA_info_gain -= dot(qo_pi[t][modality], spm_dot(wA_modality, qs_pi[t]))
+        end
+    end
+    return pA_info_gain
+end
+
 
 ### Action Sampling ###
 """ Sample Action [Stochastic or Deterministic] """

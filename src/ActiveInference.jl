@@ -22,6 +22,7 @@ export # maths.jl
        spm_dot,
        spm_MDP_G,
        norm_dist_array,
+       spm_wnorm,
 
 
        # utils.jl
@@ -54,6 +55,7 @@ export # maths.jl
        get_expected_obs,
        calc_expected_utility,
        calc_states_info_gain,
+       calc_pA_info_gain,
        sample_action
 
 
