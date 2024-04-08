@@ -89,3 +89,13 @@ function sample_action!(agent::Agent)
     agent.action = action 
     return action
 end
+
+function update_A!(agent::Agent, obs)
+
+    qA = update_obs_likelihood_dirichlet(agent.pA, agent.A, obs, agent.qs_current, lr = agent.lr_pA, fr = agent.fr_pA, modalities = agent.modalities_to_learn)
+    
+    agent.pA = qA
+    agent.A = norm_dist_array(qA)
+
+    return qA
+end
