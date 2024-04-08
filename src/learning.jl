@@ -1,6 +1,6 @@
 """ Update obs likelihood matrix """
 
-function update_obs_likelihood_dirichlets(pA, A, obs, qs; lr = 1.0, fr = 1.0, modalities = "all")
+function update_obs_likelihood_dirichlet(pA, A, obs, qs; lr = 1.0, fr = 1.0, modalities = "all")
 
     # Extracting the number of modalities and observations from the dirichlet: pA
     num_modalities = length(pA)
