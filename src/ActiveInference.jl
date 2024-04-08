@@ -45,6 +45,7 @@ export # maths.jl
        infer_states!,
        infer_policies!,
        sample_action!,
+       update_A!,
 
        # inference.jl
        get_expected_states,
