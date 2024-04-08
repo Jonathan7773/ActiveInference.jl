@@ -5,6 +5,7 @@ include("Environments\\EpistChainEnv.jl")
 include("agent.jl")
 include("utils.jl")
 include("inference.jl")
+include("learning.jl")
 
 export # maths.jl
        norm_dist,
@@ -56,7 +57,10 @@ export # maths.jl
        calc_expected_utility,
        calc_states_info_gain,
        calc_pA_info_gain,
-       sample_action
+       sample_action,
+
+       # learning.jl
+       update_obs_likelihood_dirichlet
 
 
     # From Environments\\EpistChainEnv.jl
