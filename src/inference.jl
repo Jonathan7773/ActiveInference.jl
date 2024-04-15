@@ -137,7 +137,7 @@ end
 #### Policy Inference #### 
 
 """ Update Posterior over Policies """
-function update_posterior_policies(qs, A, B, C, policies, use_utility=true, use_states_info_gain=true, use_param_info_gain = false, pA = nothing, E = nothing, gamma=16.0)
+function update_posterior_policies(qs, A, B, C, policies, use_utility=true, use_states_info_gain=true, use_param_info_gain = false, pA = nothing, pB = nothing, E = nothing, gamma=16.0)
     n_policies = length(policies)
     G = zeros(n_policies)
     q_pi = zeros(n_policies, 1)
