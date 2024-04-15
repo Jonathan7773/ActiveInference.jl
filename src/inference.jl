@@ -137,36 +137,6 @@ end
 #### Policy Inference #### 
 
 """ Update Posterior over Policies """
-# function update_posterior_policies(qs, A, B, C, policies, use_utility=true, use_states_info_gain=true,E = nothing, gamma=16.0)
-#     n_policies = length(policies)
-#     G = zeros(n_policies)
-#     q_pi = zeros(n_policies, 1)
-#     qs_pi = []
-#     qo_pi = []
-  
-#     if isnothing(E)
-#         lnE = spm_log_single(ones(n_policies) / n_policies)
-#     else
-#         lnE = spm_log_single(E)
-#     end
-
-#     for (idx, policy) in enumerate(policies)
-#         qs_pi = get_expected_states(qs, B, policy)
-#         qo_pi = get_expected_obs(qs_pi, A)
-
-#         if use_utility
-#             G[idx] += calc_expected_utility(qo_pi, C)
-#         end
-
-#         if use_states_info_gain
-#             G[idx] += calc_states_info_gain(A, qs_pi)
-#         end
-#     end
-
-#     q_pi = softmax(G * gamma + lnE)
-#     return q_pi, G
-# end
-
 function update_posterior_policies(qs, A, B, C, policies, use_utility=true, use_states_info_gain=true, use_param_info_gain = false, pA = nothing, E = nothing, gamma=16.0)
     n_policies = length(policies)
     G = zeros(n_policies)
