@@ -166,6 +166,9 @@ function update_posterior_policies(qs, A, B, C, policies, use_utility=true, use_
             if pA !== nothing
                 G[idx] += calc_pA_info_gain(pA, qo_pi, qs_pi)
             end
+            if pB !== nothing
+                G[idx] += calc_pB_info_gain(pB, qs_pi, qs, policy)
+            end
         end
 
     end
@@ -252,6 +255,36 @@ function calc_pA_info_gain(pA, qo_pi, qs_pi)
         end
     end
     return pA_info_gain
+end
+
+"""calc_pB_info_gain"""
+
+function calc_pB_info_gain(pB, qs_pi, qs_prev, policy)
+    n_steps = length(qs_pi)
+    num_factors = length(pB)
+
+    wB = array_of_any(num_factors)
+    for (factor, pB_f) in enumerate(pB)
+        wB[factor] = spm_wnorm(pB_f)
+    end
+
+    pB_info_gain = 0
+
+    for t in 1:n_steps
+        if t == 1
+            previous_qs = qs_prev
+        else
+            previous_qs = qs_pi[t-1]
+        end
+
+        policy_t = policy[t, :]
+
+        for (factor, a_i) in enumerate(policy_t)
+            wB_factor_t = wB[factor][:,:,Int(a_i)] .* pB[factor][:,:,Int(a_i)]
+            pB_info_gain -= dot(qs_pi[t][factor], wB_factor_t * previous_qs[factor])
+        end
+    end
+    return pB_info_gain
 end
 
 

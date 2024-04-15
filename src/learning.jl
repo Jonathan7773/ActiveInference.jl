@@ -25,3 +25,24 @@ function update_obs_likelihood_dirichlet(pA, A, obs, qs; lr = 1.0, fr = 1.0, mod
 
     return qA
 end
+
+""" Update state likelihood matrix """
+function update_state_likelihood_dirichlet(pB, B, actions, qs, qs_prev; lr = 1.0, fr = 1.0, factors = "all")
+
+    num_factors = length(pB)
+
+    qB = deepcopy(pB)
+
+
+    if factors === "all"
+        factors = collect(1:num_factors)
+    end
+
+    for factor in factors
+        dfdb = spm_cross(qs[factor], qs_prev[factor])
+        dfdb .*= (B[factor][:,:,Int(actions[factor])])
+        qB[factor][:,:,Int(actions[factor])]*fr .+= (lr .* dfdb)
+    end
+
+    return qB
+end
