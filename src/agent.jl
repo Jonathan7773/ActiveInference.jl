@@ -113,7 +113,7 @@ end
 
 function update_B!(agent::Agent, qs_prev)
 
-    qB = update_state_likelihood_dirichlet(agent.pB, agent.B, agent.action, agent.qs, qs_prev, lr = agent.lr_pB, fr = agent.fr_pB, factors = agent.factors_to_learn)
+    qB = update_state_likelihood_dirichlet(agent.pB, agent.B, agent.action, agent.qs_current, qs_prev, lr = agent.lr_pB, fr = agent.fr_pB, factors = agent.factors_to_learn)
 
     agent.pB = qB
     agent.B = norm_dist_array(qB)
