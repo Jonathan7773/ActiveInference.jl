@@ -47,6 +47,7 @@ export # maths.jl
        sample_action!,
        update_A!,
        update_B!,
+       update_D!,
 
        # inference.jl
        get_expected_states,
@@ -64,7 +65,8 @@ export # maths.jl
 
        # learning.jl
        update_obs_likelihood_dirichlet,
-       update_state_likelihood_dirichlet
+       update_state_likelihood_dirichlet,
+       update_state_prior_dirichlet
 
 
     # From Environments\\EpistChainEnv.jl

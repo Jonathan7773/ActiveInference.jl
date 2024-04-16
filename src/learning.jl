@@ -46,3 +46,23 @@ function update_state_likelihood_dirichlet(pB, B, actions, qs, qs_prev; lr = 1.0
 
     return qB
 end
+
+function update_state_prior_dirichlet(pD, qs, lr = 1.0, fr = 1.0, factors = "all")
+
+    num_factors = length(pD)
+
+    qD = deepcopy(pD)
+
+    if factors == "all"
+        factors = collect(1:num_factors)
+    end
+
+    for factor in factors
+        idx = pD[factor] .> 0
+        qD[factor][idx] = (fr * qD[factor][idx]) .+ (lr * qs[factor][idx])
+    end  
+    
+    return qD
+end
+
+

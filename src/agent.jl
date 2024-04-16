@@ -9,6 +9,7 @@ mutable struct Agent
     D::Array{Any,1}
     pA::Union{Array{Any,1}, Nothing}
     pB::Union{Array{Any,1}, Nothing}
+    pD::Union{Array{Any,1}, Nothing}
     policies::Array  # Inferred from the B matrix
     num_controls::Array{Int,1}  # Number of actions per factor
     control_fac_idx::Array{Int,1}  # Indices of controllable factors
@@ -25,6 +26,8 @@ mutable struct Agent
     fr_pA::Float64 # pA forgetting parameter, should be 1 for no forgetting
     lr_pB::Float64
     fr_pB::Float64
+    lr_pD::Float64
+    fr_pD::Float64
     use_utility::Bool # Utility Boolean Flag
     use_states_info_gain::Bool # States Information Gain Boolean Flag
     use_param_info_gain::Bool
@@ -35,7 +38,7 @@ mutable struct Agent
     
 end
 
-function initialize_agent(A, B, C, D; pA = nothing, pB = nothing, num_controls=nothing, control_fac_idx=nothing, policy_len=1, E=nothing, gamma=16.0, alpha=16.0, lr_pA = 1.0, fr_pA = 1.0, lr_pB = 1.0, fr_pB = 1.0, use_utility=true, use_states_info_gain=true, use_param_info_gain = false, action_selection="stochastic", modalities_to_learn = "all", factors_to_learn = "all")
+function initialize_agent(A, B, C, D; pA = nothing, pB = nothing, pD = nothing, num_controls=nothing, control_fac_idx=nothing, policy_len=1, E=nothing, gamma=16.0, alpha=16.0, lr_pA = 1.0, fr_pA = 1.0, lr_pB = 1.0, fr_pB = 1.0, lr_pD = 1.0, fr_pD = 1.0, use_utility=true, use_states_info_gain=true, use_param_info_gain = false, action_selection="stochastic", modalities_to_learn = "all", factors_to_learn = "all")
     num_states = [size(B[f], 1) for f in eachindex(B)]
 
     # if num_controls are not given, they are inferred from the B matrix
@@ -54,7 +57,7 @@ function initialize_agent(A, B, C, D; pA = nothing, pB = nothing, num_controls=n
     Q_pi = ones(length(policies)) / length(policies)  
     G = zeros(length(policies))
     action = Float64[]
-    return Agent(A, B, C, D, pA, pB, policies, num_controls, control_fac_idx, policy_len, qs_current, prior, Q_pi, G, action, E, gamma, alpha, lr_pA, fr_pA, lr_pB, fr_pB, use_utility, use_states_info_gain, use_param_info_gain, action_selection, modalities_to_learn, factors_to_learn)
+    return Agent(A, B, C, D, pA, pB, pD, policies, num_controls, control_fac_idx, policy_len, qs_current, prior, Q_pi, G, action, E, gamma, alpha, lr_pA, fr_pA, lr_pB, fr_pB, lr_pD, fr_pD, use_utility, use_states_info_gain, use_param_info_gain, action_selection, modalities_to_learn, factors_to_learn)
 end
 
 function infer_states!(agent::Agent, obs)
@@ -66,23 +69,6 @@ function infer_states!(agent::Agent, obs)
     end
     agent.qs_current = update_posterior_states(agent.A, obs, prior=agent.prior) 
 end
-
-# Update the agent's beliefs over policies
-# function infer_policies!(agent::Agent)
-#     q_pi, G = update_posterior_policies(agent.qs_current, agent.A, agent.B, agent.C, agent.policies, agent.use_utility, agent.use_states_info_gain,agent.E, agent.gamma)
-
-#     agent.Q_pi = q_pi
-#     agent.G = G  
-#     return q_pi, G
-# end
-
-# function infer_policies!(agent::Agent)
-#     q_pi, G = update_posterior_policies(agent.qs_current, agent.A, agent.B, agent.C, agent.policies, agent.use_utility, agent.use_states_info_gain, agent.use_param_info_gain, agent.pA, agent.E, agent.gamma)
-
-#     agent.Q_pi = q_pi
-#     agent.G = G  
-#     return q_pi, G
-# end
 
 function infer_policies!(agent::Agent)
     q_pi, G = update_posterior_policies(agent.qs_current, agent.A, agent.B, agent.C, agent.policies, agent.use_utility, agent.use_states_info_gain, agent.use_param_info_gain, agent.pA, agent.pB, agent.E, agent.gamma)
@@ -121,4 +107,13 @@ function update_B!(agent::Agent, qs_prev)
     return qB
 end
 
+function update_D!(agent::Agent, qs_t1)
+
+    qD = update_state_prior_dirichlet(agent.pD, qs_t1, agent.lr_pD, agent.fr_pD, factors = agent.factors_to_learn)
+
+    agent.pD = qD
+    agent.D = norm_dist_array(qD)
+
+    return qD
+end
 
