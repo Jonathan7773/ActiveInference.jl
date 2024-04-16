@@ -109,7 +109,7 @@ end
 
 function update_D!(agent::Agent, qs_t1)
 
-    qD = update_state_prior_dirichlet(agent.pD, qs_t1, agent.lr_pD, agent.fr_pD, factors = agent.factors_to_learn)
+    qD = update_state_prior_dirichlet(agent.pD, qs_t1; agent.lr_pD, agent.fr_pD, factors = agent.factors_to_learn)
 
     agent.pD = qD
     agent.D = norm_dist_array(qD)
