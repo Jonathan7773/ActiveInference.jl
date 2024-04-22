@@ -35,7 +35,6 @@ mutable struct Agent
     modalities_to_learn::String # Modalities can be eithe "all" or "# modality"
     factors_to_learn::String
 
-    
 end
 
 function initialize_agent(A, B, C, D; pA = nothing, pB = nothing, pD = nothing, num_controls=nothing, control_fac_idx=nothing, policy_len=1, E=nothing, gamma=16.0, alpha=16.0, lr_pA = 1.0, fr_pA = 1.0, lr_pB = 1.0, fr_pB = 1.0, lr_pD = 1.0, fr_pD = 1.0, use_utility=true, use_states_info_gain=true, use_param_info_gain = false, action_selection="stochastic", modalities_to_learn = "all", factors_to_learn = "all")
